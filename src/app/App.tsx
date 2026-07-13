@@ -54,7 +54,9 @@ export function AppContent() {
 
   useLayoutEffect(() => {
     if (previousViewRef.current !== view) {
-      document.getElementById("main-content")?.focus();
+      document.documentElement.scrollTop = 0;
+      document.body.scrollTop = 0;
+      document.getElementById("main-content")?.focus({ preventScroll: true });
       previousViewRef.current = view;
     }
   }, [view]);

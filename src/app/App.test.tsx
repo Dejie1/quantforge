@@ -103,6 +103,9 @@ describe("App", () => {
     expect(screen.getByRole("main")).toHaveAttribute("id", "main-content");
     expect(container.querySelectorAll("main")).toHaveLength(1);
     expect(screen.getByText("Quant interview training")).toBeInTheDocument();
+    expect(
+      screen.getByRole("link", { name: "View QuantForge source code on GitHub" }),
+    ).toHaveAttribute("href", "https://github.com/Dejie1/quantforge");
   });
 
   it("uses local view state to open setup while preserving one main landmark", async () => {
@@ -120,6 +123,23 @@ describe("App", () => {
     await user.click(screen.getByRole("button", { name: "Progress" }));
     expect(screen.getByRole("heading", { name: "See the signal. Choose the next rep." })).toBeInTheDocument();
     expect(main).toHaveFocus();
+  });
+
+  it("starts each navigated view at the top without focus-induced scrolling", async () => {
+    const user = userEvent.setup();
+    render(<App />);
+
+    document.documentElement.scrollTop = 240;
+    document.body.scrollTop = 240;
+    await user.click(screen.getByRole("button", { name: "Start training" }));
+
+    expect(document.documentElement.scrollTop).toBe(0);
+    expect(document.body.scrollTop).toBe(0);
+    expect(screen.getByRole("main")).toHaveFocus();
+
+    document.documentElement.scrollTop = 180;
+    await user.click(screen.getByRole("button", { name: "Progress" }));
+    expect(document.documentElement.scrollTop).toBe(0);
   });
 
   it("keeps mode cards in semantic list controls without canvas-only content", () => {
